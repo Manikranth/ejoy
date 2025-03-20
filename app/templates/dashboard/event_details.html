@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} - Wedding Invitation Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="text-center mb-5">
+        <a href="{{ url_for('dashboard.events') }}" class="btn btn-sm btn-outline-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Events
+        </a>
+        <h1 class="elegant-title display-4">{{ event.title }}</h1>
+        
+        <div class="event-details-header">
+            <div class="event-detail-tag">
+                <i class="far fa-calendar-alt"></i> 
+                {% if event.event_date %}
+                    {{ event.event_date.strftime('%B %d, %Y') }}
+                {% else %}
+                    Date not set
+                {% endif %}
+            </div>
+            <div class="event-detail-tag">
+                <i class="fas fa-map-marker-alt"></i> 
+                {{ event.venue or 'Location not set' }}
+            </div>
+            <div class="event-detail-tag">
+                <button class="btn-link text-decoration-none" data-bs-toggle="modal" data-bs-target="#editEventModal">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <h3 class="elegant-title">Invitations</h3>
+                        <p>Create and manage your event invitations</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createInvitationModal">
+                            <i class="fas fa-plus"></i> New Invitation
+                        </button>
+                        
+                        {% if invitations %}
+                        <div class="mt-4">
+                            <h5>Your Invitations:</h5>
+                            <div class="list-group text-start">
+                                {% for invitation in invitations %}
+                                <a href="{{ url_for('editor.index', template_id=invitation.template_id, event_id=event.id, invitation_id=invitation.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    {{ invitation.template.name }}
+                                    <span class="badge bg-secondary rounded-pill">{{ invitation.rsvps|length }} RSVPs</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="elegant-title">Guest List</h3>
+                        <p>View and manage your event RSVPs</p>
+                        <a href="{{ url_for('rsvp.index', event_id=event.id) }}" class="btn btn-primary">
+                            <i class="fas fa-list"></i> View Guest List
+                        </a>
+                        
+                        {% if invitations %}
+                        <div class="mt-4">
+                            <h5>RSVP Stats:</h5>
+                            <div class="row text-center mt-3">
+                                {% set total_rsvps = namespace(count=0) %}
+                                {% set attending = namespace(count=0) %}
+                                
+                                {% for invitation in invitations %}
+                                    {% for rsvp in invitation.rsvps %}
+                                        {% set total_rsvps.count = total_rsvps.count + 1 %}
+                                        {% if rsvp.attending %}
+                                            {% set attending.count = attending.count + rsvp.guest_count %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <h3>{{ total_rsvps.count }}</h3>
+                                        <p>Responses</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <h3>{{ attending.count }}</h3>
+                                        <p>Attending</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Event Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEventForm" action="{{ url_for('dashboard.update_event', event_id=event.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Event Title *</label>
+                        <input type="text" class="form-control" id="eventTitle" name="title" value="{{ event.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventDate" class="form-label">Event Date *</label>
+                        <input type="date" class="form-control" id="eventDate" name="event_date" 
+                               value="{{ event.event_date.strftime('%Y-%m-%d') if event.event_date else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventVenue" class="form-label">Venue</label>
+                        <input type="text" class="form-control" id="eventVenue" name="venue" value="{{ event.venue or '' }}">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateEventBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Invitation Modal -->
+<div class="modal fade" id="createInvitationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Invitation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select a template to create your invitation:</p>
+                <div class="row">
+                    {% for template in templates %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card template-select-card h-100">
+                            <div class="card-body text-center">
+                                {% if template.thumbnail_url %}
+                                <img src="{{ template.thumbnail_url }}" alt="{{ template.name }}" class="img-fluid mb-2" style="max-height: 100px;">
+                                {% else %}
+                                <div class="no-thumbnail mb-2">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                {% endif %}
+                                <h6>{{ template.name }}</h6>
+                                <a href="{{ url_for('editor.index', template_id=template.id, event_id=event.id) }}" class="btn btn-sm btn-outline-primary mt-2">
+                                    Select
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Submit edit form
+        document.getElementById('updateEventBtn').addEventListener('click', function() {
+            document.getElementById('editEventForm').submit();
+        });
+    });
+</script>
+{% endblock %} 

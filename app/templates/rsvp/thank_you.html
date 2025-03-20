@@ -1,0 +1,33 @@
+{% extends "base_public.html" %}
+
+{% block title %}Thank You - {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="rsvp-container">
+    <div class="thank-you-card card">
+        <div class="card-body text-center p-5">
+            <h1 class="display-4 mb-4">Thank You!</h1>
+            
+            {% if attending %}
+            <p class="lead">We're thrilled that you'll be joining us for our special day.</p>
+            <p>We look forward to celebrating with you!</p>
+            {% else %}
+            <p class="lead">We're sorry you won't be able to join us, but we appreciate your response.</p>
+            <p>Thanks for letting us know!</p>
+            {% endif %}
+            
+            <hr class="my-4">
+            
+            <div class="event-details my-4">
+                <h5>{{ event.title }}</h5>
+                {% if event.event_date %}
+                <p><i class="far fa-calendar-alt me-2"></i> {{ event.event_date.strftime('%B %d, %Y') }}</p>
+                {% endif %}
+                {% if event.venue %}
+                <p><i class="fas fa-map-marker-alt me-2"></i> {{ event.venue }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

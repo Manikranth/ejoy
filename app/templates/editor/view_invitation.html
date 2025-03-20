@@ -1,0 +1,210 @@
+{% extends "base_public.html" %}
+
+{% block title %}{{ event.title }} - Wedding Invitation{% endblock %}
+
+{% block extra_css %}
+<style>
+    .invitation-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+    }
+    
+    .invitation-element {
+        position: absolute;
+    }
+    
+    .invitation-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+    
+    .invitation-content {
+        position: relative;
+        width: 100%;
+        padding-top: 75%; /* 4:3 Aspect Ratio */
+        overflow: hidden;
+    }
+    
+    .invitation-rsvp-form {
+        margin-top: 40px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="invitation-container">
+    <div class="invitation-content" id="invitationContent">
+        <!-- Template elements will be rendered here by JavaScript -->
+    </div>
+    
+    <div class="invitation-rsvp-form">
+        <h2 class="text-center mb-4">RSVP</h2>
+        <form action="{{ url_for('rsvp.submit', invitation_id=invitation.id) }}" method="POST">
+            <div class="mb-3">
+                <label for="guestName" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="guestName" name="guest_name" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="guestEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="guestEmail" name="email" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Will you attend?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="attending" id="attendingYes" value="yes" required>
+                    <label class="form-check-label" for="attendingYes">
+                        Yes, I will attend
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="attending" id="attendingNo" value="no">
+                    <label class="form-check-label" for="attendingNo">
+                        Sorry, I cannot attend
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="guestCount" class="form-label">Number of Guests (including yourself)</label>
+                <select class="form-select" id="guestCount" name="guest_count">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="message" class="form-label">Message (Optional)</label>
+                <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary px-4 py-2">Submit RSVP</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const templateData = {{ template_data|tojson|safe }};
+        const container = document.getElementById('invitationContent');
+        
+        // Set background
+        if (templateData.background) {
+            let backgroundElement = document.createElement('div');
+            backgroundElement.className = 'invitation-background';
+            
+            if (templateData.background.type === 'color') {
+                backgroundElement.style.backgroundColor = templateData.background.color;
+            } else if (templateData.background.type === 'image') {
+                backgroundElement.style.backgroundImage = `url(${templateData.background.src})`;
+                backgroundElement.style.backgroundSize = 'cover';
+                backgroundElement.style.backgroundPosition = 'center';
+            }
+            
+            container.appendChild(backgroundElement);
+        }
+        
+        // Render elements
+        if (templateData.elements && Array.isArray(templateData.elements)) {
+            templateData.elements.forEach(element => {
+                let el = document.createElement('div');
+                el.className = 'invitation-element';
+                
+                // Position
+                if (element.position) {
+                    el.style.left = `${element.position.x}%`;
+                    el.style.top = `${element.position.y}%`;
+                    el.style.transform = 'translate(-50%, -50%)';
+                }
+                
+                // Element type specific rendering
+                if (element.type === 'text') {
+                    el.innerHTML = element.content || '';
+                    
+                    // Apply styling
+                    if (element.style) {
+                        el.style.fontFamily = element.style.fontFamily || 'inherit';
+                        el.style.fontSize = `${element.style.fontSize || 16}px`;
+                        el.style.color = element.style.color || '#000000';
+                        el.style.fontWeight = element.style.bold ? 'bold' : 'normal';
+                        el.style.fontStyle = element.style.italic ? 'italic' : 'normal';
+                        el.style.textDecoration = element.style.underline ? 'underline' : 'none';
+                        el.style.textAlign = element.style.textAlign || 'center';
+                    }
+                } else if (element.type === 'image') {
+                    let img = document.createElement('img');
+                    img.src = element.src;
+                    img.alt = 'Invitation image';
+                    img.style.maxWidth = '100%';
+                    
+                    if (element.style) {
+                        img.style.opacity = element.style.opacity || 1;
+                    }
+                    
+                    el.appendChild(img);
+                } else if (element.type === 'countdown') {
+                    el.id = `countdown-${Date.now()}`;
+                    el.innerHTML = 'Loading countdown...';
+                    
+                    // Apply styling
+                    if (element.style) {
+                        el.style.fontFamily = element.style.fontFamily || 'inherit';
+                        el.style.fontSize = `${element.style.fontSize || 16}px`;
+                        el.style.color = element.style.color || '#000000';
+                        el.style.fontWeight = element.style.bold ? 'bold' : 'normal';
+                        el.style.fontStyle = element.style.italic ? 'italic' : 'normal';
+                        el.style.textAlign = element.style.textAlign || 'center';
+                    }
+                    
+                    // Initialize countdown
+                    if (element.targetDate) {
+                        const countdownId = el.id;
+                        const targetDate = new Date(element.targetDate);
+                        
+                        function updateCountdown() {
+                            const now = new Date();
+                            const diff = targetDate - now;
+                            
+                            if (diff <= 0) {
+                                document.getElementById(countdownId).innerHTML = "It's time!";
+                                return;
+                            }
+                            
+                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                            
+                            document.getElementById(countdownId).innerHTML = 
+                                `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+                        }
+                        
+                        updateCountdown();
+                        setInterval(updateCountdown, 1000);
+                    }
+                }
+                
+                container.appendChild(el);
+            });
+        }
+    });
+</script>
+{% endblock %} 

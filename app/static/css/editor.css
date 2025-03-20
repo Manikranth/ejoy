@@ -1,0 +1,125 @@
+/* Editor Layout */
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+    overflow: hidden;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.editor-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    margin: 0;
+}
+
+.editor-workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Panel Styling */
+.editor-panel {
+    width: 280px;
+    background-color: #f8f8f8;
+    border-right: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.properties-panel {
+    border-right: none;
+    border-left: 1px solid #eee;
+}
+
+.panel-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.panel-content {
+    padding: 15px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Canvas Workspace */
+.editor-workspace-canvas {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    overflow: auto;
+}
+
+.canvas-container {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+/* Element list */
+.element-list {
+    margin-top: 20px;
+}
+
+.element-list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.element-list-item:hover {
+    background-color: #e9ecef;
+}
+
+.element-list-item.active {
+    background-color: #e9ecef;
+}
+
+.element-list-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Properties Panel */
+.properties-section {
+    margin-bottom: 20px;
+}
+
+.properties-section h5 {
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Preview Modal */
+.preview-container {
+    min-height: 500px;
+    background-color: white;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 

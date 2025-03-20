@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Wedding Invitation Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="page-title">Welcome, {{ current_user.first_name }}!</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">My Events</h5>
+                    <a href="{{ url_for('dashboard.events') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if events %}
+                    <div class="list-group">
+                        {% for event in events %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ event.title }}</h5>
+                                <small>{{ event.event_date.strftime('%b %d, %Y') if event.event_date else 'No date' }}</small>
+                            </div>
+                            <p class="mb-1">{{ event.venue }}</p>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center my-4">No events yet. Create your first event!</p>
+                    <div class="text-center">
+                        <a href="#" class="btn btn-primary">Create Event</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Invitations</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if invitations %}
+                    <div class="list-group">
+                        {% for invitation in invitations %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ invitation.event.title }}</h5>
+                                <small>{{ invitation.updated_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            <p class="mb-1">Using {{ invitation.template.name }} template</p>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center my-4">No invitations yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Templates</h5>
+                    <a href="{{ url_for('templates_bp.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if templates %}
+                        {% for template in templates %}
+                        <div class="col-md-4 mb-4">
+                            <div class="template-card">
+                                <div class="template-thumbnail">
+                                    {% if template.thumbnail_url %}
+                                    <img src="{{ template.thumbnail_url }}" alt="{{ template.name }}">
+                                    {% else %}
+                                    <div class="no-thumbnail">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="template-info">
+                                    <h5>{{ template.name }}</h5>
+                                    <a href="#" class="btn btn-sm btn-primary">Use Template</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12">
+                            <p class="text-center my-4">No templates available.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

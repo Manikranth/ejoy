@@ -1,0 +1,446 @@
+/* Dashboard styles */
+:root {
+    --primary-color: #333333;  /* Changed from #863A3A to dark gray */
+    --secondary-color: #f7f9fc;
+    --text-color: #333;
+    --sidebar-bg: #1e1e1e;  /* Changed to dark (almost black) */
+    --sidebar-text: #ffffff;
+    --border-color: #e0e0e0;  /* Light gray border */
+    --gray-accent: #6c757d;  /* Gray accent color */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;  /* Changed to white */
+    color: var(--text-color);
+}
+
+/* Wrapper */
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar */
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    transition: all 0.3s;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #000000;  /* Changed to black */
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+    flex-grow: 1;
+}
+
+#sidebar ul p {
+    color: var(--sidebar-text);
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    display: block;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+#sidebar ul li a:hover {
+    background: #333333;  /* Changed to dark gray */
+}
+
+#sidebar ul li.active > a {
+    background: #555555;  /* Changed to medium gray */
+    color: white;
+}
+
+#sidebar .user-actions {
+    margin-top: auto;
+    padding-bottom: 20px;
+}
+
+/* Content */
+#content {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: absolute;
+    right: 0;
+}
+
+#content.active {
+    width: 100%;
+}
+
+/* Navbar */
+#content .navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+/* Dashboard Cards */
+.dashboard-container {
+    padding: 20px;
+}
+
+.page-title {
+    margin-bottom: 30px;
+    font-family: 'Playfair Display', serif;
+    color: #222222;  /* Changed to near-black */
+}
+
+.dashboard-card, .event-card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.dashboard-card .card-header, .event-card .card-header {
+    background-color: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 20px;
+    font-weight: 500;
+}
+
+.dashboard-card .card-body, .event-card .card-body {
+    padding: 20px;
+}
+
+/* Empty state */
+.empty-state-card {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--gray-accent);
+}
+
+/* Template Cards */
+.template-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    border: 1px solid var(--border-color);
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+}
+
+.template-thumbnail {
+    height: 200px;
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.template-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #adb5bd;
+    font-size: 3rem;
+}
+
+.template-info {
+    padding: 15px;
+    background-color: white;
+}
+
+.template-info h5 {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #222222;  /* Changed to near-black */
+}
+
+/* Template select card */
+.template-select-card {
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border-color);
+}
+
+.template-select-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Auth Pages */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--secondary-color);
+}
+
+.auth-form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.auth-form-container h2 {
+    color: #222222;  /* Changed to near-black */
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #333333;  /* Changed to dark gray */
+    border-color: #333333;
+}
+
+.btn-primary:hover {
+    background-color: #555555;  /* Changed to medium gray */
+    border-color: #555555;
+}
+
+.btn-outline-primary {
+    color: #333333;  /* Changed to dark gray */
+    border-color: #333333;
+}
+
+.btn-outline-primary:hover {
+    background-color: #333333;  /* Changed to dark gray */
+    border-color: #333333;
+}
+
+/* Event page specific */
+.event-card {
+    height: 100%;
+    transition: all 0.2s;
+}
+
+.event-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #content {
+        width: 100%;
+    }
+    #content.active {
+        width: calc(100% - 250px);
+    }
+}
+
+/* Add these new styles for elegant typography and layout */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+.elegant-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    color: #222;
+    margin-bottom: 1rem;
+}
+
+.display-4 {
+    font-size: 2.5rem;
+}
+
+/* Event cards with elegant styling */
+.event-card {
+    border: 1px solid #eee;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.event-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.event-card .card-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+/* Event details with tag design */
+.event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 0.95rem;
+}
+
+.event-detail {
+    color: #666;
+}
+
+.event-detail i {
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+    color: #444;
+}
+
+/* Header style for event details page */
+.event-details-header {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0 2rem;
+}
+
+.event-detail-tag {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #f8f8f8;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Actions at the bottom of event cards */
+.event-actions {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 0.5rem;
+}
+
+.event-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.event-action-btn:hover {
+    color: #000;
+}
+
+.event-action-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.event-action-btn span {
+    font-size: 0.8rem;
+}
+
+/* Feature cards for event details page */
+.feature-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 2rem;
+    height: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.feature-card h3 {
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Stats boxes */
+.stat-box {
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.stat-box h3 {
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.stat-box p {
+    margin-bottom: 0;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+/* Button styling */
+.btn-link {
+    color: #333;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.btn-link:hover {
+    color: #000;
+    text-decoration: underline;
+} 

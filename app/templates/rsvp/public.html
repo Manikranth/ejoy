@@ -1,0 +1,61 @@
+{% extends "base_public.html" %}
+
+{% block title %}Wedding RSVP{% endblock %}
+
+{% block content %}
+<div class="container rsvp-container">
+    <div class="card rsvp-card">
+        <div class="card-body">
+            <h1 class="text-center mb-4">RSVP</h1>
+            <p class="text-center mb-4">Please let us know if you'll be joining us for our special day.</p>
+            
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            
+            <form method="post">
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name*</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name*</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label d-block">Will you be attending?*</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="attending" id="attending-yes" value="yes" checked>
+                        <label class="form-check-label" for="attending-yes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="attending" id="attending-no" value="no">
+                        <label class="form-check-label" for="attending-no">No</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="guestCount" class="form-label">Number of Guests (including yourself)</label>
+                    <select class="form-select" id="guestCount" name="guest_count">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Submit RSVP</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}RSVPs - Wedding Invitation Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="page-title">RSVP List</h1>
+    
+    {% if events %}
+    <div class="mb-4">
+        <label for="eventSelector" class="form-label">Select Event</label>
+        <select id="eventSelector" class="form-select">
+            {% for event in events %}
+            <option value="{{ event.id }}" {% if selected_event and selected_event.id == event.id %}selected{% endif %}>
+                {{ event.title }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Guest List</h5>
+        </div>
+        <div class="card-body">
+            {% if rsvps %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Guests</th>
+                            <th>Attending</th>
+                            <th>Response Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rsvp in rsvps %}
+                        <tr>
+                            <td>{{ rsvp.first_name }} {{ rsvp.last_name }}</td>
+                            <td>{{ rsvp.email or '-' }}</td>
+                            <td>{{ rsvp.phone or '-' }}</td>
+                            <td>{{ rsvp.guest_count }}</td>
+                            <td>
+                                {% if rsvp.attending %}
+                                <span class="badge bg-success">Yes</span>
+                                {% else %}
+                                <span class="badge bg-danger">No</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ rsvp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center my-4">No RSVPs received yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You need to create an event first before you can view RSVPs.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventSelector = document.getElementById('eventSelector');
+        if (eventSelector) {
+            eventSelector.addEventListener('change', function() {
+                window.location.href = '{{ url_for("rsvp.index") }}?event_id=' + this.value;
+            });
+        }
+    });
+</script>
+{% endblock %} 

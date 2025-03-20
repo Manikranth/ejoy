@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Templates - Wedding Invitation Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Templates</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+            <i class="fas fa-plus"></i> Create Template
+        </button>
+    </div>
+    
+    <div class="row">
+        {% if templates %}
+            {% for template in templates %}
+            <div class="col-md-4 mb-4">
+                <div class="template-card">
+                    <div class="template-thumbnail">
+                        {% if template.thumbnail_url %}
+                        <img src="{{ template.thumbnail_url }}" alt="{{ template.name }}">
+                        {% else %}
+                        <div class="no-thumbnail">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="template-info">
+                        <h5>{{ template.name }}</h5>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('editor.index', template_id=template.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                            {% if not template.is_system %}
+                            <button class="btn btn-sm btn-outline-danger template-delete-btn" data-template-id="{{ template.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No templates available. Create your first template!
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Template Modal -->
+<div class="modal fade" id="createTemplateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createTemplateForm" method="post" action="{{ url_for('templates_bp.create') }}">
+                    <div class="mb-3">
+                        <label for="templateName" class="form-label">Template Name</label>
+                        <input type="text" class="form-control" id="templateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Template Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="template_type" id="blankTemplate" value="blank" checked>
+                            <label class="form-check-label" for="blankTemplate">
+                                Blank Template
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="template_type" id="duplicateTemplate" value="duplicate">
+                            <label class="form-check-label" for="duplicateTemplate">
+                                Duplicate Existing Template
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3 duplicate-options" style="display: none;">
+                        <label for="sourceTemplate" class="form-label">Source Template</label>
+                        <select class="form-select" id="sourceTemplate" name="source_template_id">
+                            {% for template in templates %}
+                            <option value="{{ template.id }}">{{ template.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createTemplateBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle duplicate options
+        const templateTypeRadios = document.querySelectorAll('input[name="template_type"]');
+        const duplicateOptions = document.querySelector('.duplicate-options');
+        
+        templateTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'duplicate') {
+                    duplicateOptions.style.display = 'block';
+                } else {
+                    duplicateOptions.style.display = 'none';
+                }
+            });
+        });
+        
+        // Submit form
+        document.getElementById('createTemplateBtn').addEventListener('click', function() {
+            document.getElementById('createTemplateForm').submit();
+        });
+    });
+</script>
+{% endblock %} 

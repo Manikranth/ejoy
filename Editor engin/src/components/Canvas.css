@@ -1,0 +1,103 @@
+.canvas {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 200px; /* Extra space for adding new content */
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+  background-size: 20px 20px;
+  transition: min-height 0.3s ease;
+}
+
+.canvas.preview-mode {
+  background-image: none;
+  background-color: #ffffff;
+  padding-bottom: 0 !important; /* Remove padding in preview mode */
+}
+
+/* Visual guides for canvas boundaries */
+.canvas::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: rgba(124, 77, 255, 0.3);
+  pointer-events: none;
+}
+
+/* Highlight canvas boundaries on hover */
+.canvas:hover::before {
+  background-color: rgba(124, 77, 255, 0.5);
+}
+
+/* Add page-like styling in edit mode */
+.canvas:not(.preview-mode) {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+/* Update the App container to allow proper scrolling */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* Prevent double scrollbars */
+}
+
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Handle scrolling in the canvas instead */
+}
+
+/* Ensure main content area scrolls properly */
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  background-color: #f0f0f0;
+  overflow-y: auto !important; /* Force scroll */
+  position: relative;
+  height: 100%;
+}
+
+.canvas-container {
+  width: 100%;
+  max-width: 1140px;
+  background-color: white;
+  margin: 0 auto;
+  min-height: 100%;
+  height: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  position: relative;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  transition: width 0.3s ease, max-width 0.3s ease;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Fix scrolling in app content */
+.app-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 60px); /* Account for header height */
+}
+
+/* These classes will be applied based on the device view */
+.canvas-container.desktop-view {
+  width: 100%;
+  max-width: 1140px;
+}
+
+.canvas-container.tablet-view {
+  width: 768px;
+  max-width: 768px;
+}
+
+.canvas-container.mobile-view {
+  width: 375px;
+  max-width: 375px;
+} 

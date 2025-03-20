@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Template Editor - Wedding Invitation Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="editor-container">
+    <div class="editor-header">
+        <div class="back-button">
+            {% if event %}
+            <a href="{{ url_for('dashboard.event_details', event_id=event.id) }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Event
+            </a>
+            {% else %}
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            {% endif %}
+        </div>
+        <h1 class="editor-title">{{ template.name }}</h1>
+        <div class="save-button">
+            <button id="previewBtn" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button id="saveTemplate" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Template
+            </button>
+        </div>
+    </div>
+
+    <div class="editor-workspace">
+        <!-- Left panel: Element controls -->
+        <div class="editor-panel elements-panel">
+            <div class="panel-header">
+                <h3>Elements</h3>
+            </div>
+            <div class="panel-content">
+                <div class="add-element-section">
+                    <button id="addTextBtn" class="btn btn-outline-primary mb-2 w-100">
+                        <i class="fas fa-font"></i> Add Text
+                    </button>
+                    <button id="addImageBtn" class="btn btn-outline-primary mb-2 w-100">
+                        <i class="fas fa-image"></i> Add Image
+                    </button>
+                    <button id="addCountdownBtn" class="btn btn-outline-primary mb-2 w-100">
+                        <i class="fas fa-hourglass-half"></i> Add Countdown
+                    </button>
+                </div>
+                
+                <div class="element-list mt-4">
+                    <h5>Template Elements</h5>
+                    <ul id="elementsList" class="list-group">
+                        <!-- Elements will be added dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Canvas workspace -->
+        <div class="editor-workspace-canvas">
+            <div class="canvas-container">
+                <canvas id="editor-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Right panel: Element properties -->
+        <div class="editor-panel properties-panel">
+            <div class="panel-header">
+                <h3>Properties</h3>
+            </div>
+            <div class="panel-content" id="propertiesContent">
+                <div id="noSelectionMessage">
+                    <p class="text-muted text-center">
+                        Select an element to edit its properties
+                    </p>
+                </div>
+                
+                <!-- Text element properties -->
+                <div id="textProperties" class="d-none">
+                    <div class="properties-section">
+                        <h5>Text Content</h5>
+                        <textarea id="textContent" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="properties-section">
+                        <h5>Font</h5>
+                        <div class="mb-3">
+                            <label for="fontFamily" class="form-label">Font Family</label>
+                            <select id="fontFamily" class="form-select">
+                                <option value="Playfair Display">Playfair Display</option>
+                                <option value="Poppins">Poppins</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Lato">Lato</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Roboto">Roboto</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fontSize" class="form-label">Font Size</label>
+                            <input type="range" class="form-range" id="fontSize" min="8" max="72" step="1">
+                            <div class="d-flex justify-content-between">
+                                <span>8px</span>
+                                <span id="fontSizeValue">16px</span>
+                                <span>72px</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="properties-section">
+                        <h5>Style</h5>
+                        <div class="d-flex mb-3">
+                            <button id="textBold" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="fas fa-bold"></i>
+                            </button>
+                            <button id="textItalic" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="fas fa-italic"></i>
+                            </button>
+                            <button id="textUnderline" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="fas fa-underline"></i>
+                            </button>
+                            <div class="ms-auto">
+                                <div id="textColorPicker" class="color-picker"></div>
+                            </div>
+                        </div>
+                        <div class="btn-group w-100 mb-3">
+                            <button id="alignLeft" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-align-left"></i>
+                            </button>
+                            <button id="alignCenter" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-align-center"></i>
+                            </button>
+                            <button id="alignRight" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-align-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="properties-section">
+                        <h5>Position</h5>
+                        <div class="mb-3">
+                            <label for="elementPosition" class="form-label d-flex justify-content-between">
+                                <span>X Position</span>
+                                <span id="positionXValue">50%</span>
+                            </label>
+                            <input type="range" class="form-range" id="positionX" min="0" max="100" step="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="elementPosition" class="form-label d-flex justify-content-between">
+                                <span>Y Position</span>
+                                <span id="positionYValue">50%</span>
+                            </label>
+                            <input type="range" class="form-range" id="positionY" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    
+                    <button id="deleteElement" class="btn btn-danger w-100 mt-3">
+                        <i class="fas fa-trash"></i> Delete Element
+                    </button>
+                </div>
+                
+                <!-- Image element properties would go here -->
+                
+                <!-- Countdown element properties would go here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContainer" class="preview-container">
+                    <!-- Preview content goes here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Upload Modal -->
+<div class="modal fade" id="imageUploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="imageUploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Select Image</label>
+                        <input type="file" class="form-control" id="imageFile" name="image" accept="image/*">
+                    </div>
+                </form>
+                <div id="uploadPreview" class="mt-3 d-none">
+                    <h6>Preview:</h6>
+                    <img id="uploadPreviewImage" class="img-fluid" src="" alt="Preview">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="uploadImageBtn">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Fabric.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<!-- Color picker -->
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+<script>
+    // Initialize editor with template data
+    document.addEventListener('DOMContentLoaded', function() {
+        const templateData = {{ template_data|tojson|safe }};
+        const editorCanvas = new TemplateEditor('editor-canvas', templateData);
+        
+        // Preview button handler
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            
+            // Generate preview content
+            const previewContainer = document.getElementById('previewContainer');
+            previewContainer.innerHTML = ''; // Clear previous content
+            
+            // Create a preview of the invitation
+            const templateData = editorCanvas.getTemplateData();
+            
+            // Create background if needed
+            if (templateData.background) {
+                if (templateData.background.type === 'color') {
+                    previewContainer.style.backgroundColor = templateData.background.color;
+                } else if (templateData.background.type === 'image') {
+                    previewContainer.style.backgroundImage = `url(${templateData.background.src})`;
+                    previewContainer.style.backgroundSize = 'cover';
+                    previewContainer.style.backgroundPosition = 'center';
+                }
+            }
+            
+            // Add elements
+            templateData.elements.forEach(element => {
+                const el = document.createElement('div');
+                el.style.position = 'absolute';
+                el.style.left = `${element.position.x}%`;
+                el.style.top = `${element.position.y}%`;
+                el.style.transform = 'translate(-50%, -50%)';
+                
+                if (element.type === 'text') {
+                    el.innerText = element.content;
+                    
+                    if (element.style) {
+                        el.style.fontFamily = element.style.fontFamily;
+                        el.style.fontSize = `${element.style.fontSize}px`;
+                        el.style.color = element.style.color;
+                        el.style.fontWeight = element.style.bold ? 'bold' : 'normal';
+                        el.style.fontStyle = element.style.italic ? 'italic' : 'normal';
+                        el.style.textDecoration = element.style.underline ? 'underline' : 'none';
+                        el.style.textAlign = element.style.textAlign;
+                    }
+                } else if (element.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = element.src;
+                    img.style.maxWidth = '100%';
+                    
+                    if (element.style) {
+                        img.style.opacity = element.style.opacity;
+                    }
+                    
+                    el.appendChild(img);
+                } else if (element.type === 'countdown') {
+                    // Just display static countdown text for preview
+                    el.innerText = 'Countdown: 100 days 10 hours 30 minutes';
+                    
+                    if (element.style) {
+                        el.style.fontFamily = element.style.fontFamily;
+                        el.style.fontSize = `${element.style.fontSize}px`;
+                        el.style.color = element.style.color;
+                        el.style.fontWeight = element.style.bold ? 'bold' : 'normal';
+                        el.style.fontStyle = element.style.italic ? 'italic' : 'normal';
+                    }
+                }
+                
+                previewContainer.appendChild(el);
+            });
+            
+            previewModal.show();
+        });
+        
+        // Save button event handler
+        document.getElementById('saveTemplate').addEventListener('click', function() {
+            const updatedTemplateData = editorCanvas.getTemplateData();
+            
+            // Send updated template data to server
+            fetch('{{ url_for("editor.save_template", template_id=template.id) }}{% if invitation %}?invitation_id={{ invitation.id }}{% elif event %}?event_id={{ event.id }}{% endif %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedTemplateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Template saved successfully!');
+                    {% if invitation %}
+                    window.location.href = '{{ url_for("dashboard.event_details", event_id=invitation.event.id) }}';
+                    {% elif event %}
+                    window.location.href = '{{ url_for("dashboard.event_details", event_id=event.id) }}';
+                    {% else %}
+                    window.location.href = '{{ url_for("dashboard.index") }}';
+                    {% endif %}
+                } else {
+                    alert('Error saving template: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the template.');
+            });
+        });
+    });
+</script>
+{% endblock %} 
